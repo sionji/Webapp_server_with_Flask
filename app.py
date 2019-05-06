@@ -2,9 +2,14 @@
 
 from flask import Flask, render_template, url_for, request, redirect
 from subprocess import call, PIPE, Popen
+from firebase import firebase
 import psutil, datetime 
 
 app = Flask(__name__)
+
+#firebase realtime database
+thread = None
+firebase = firebase.FirebaseApplication('https://gradeprojectoreo.firebaseio.com/', None)
 
 #raspi cpu temperature
 def get_cpu_temperature():
@@ -12,9 +17,10 @@ def get_cpu_temperature():
    output, _error = process.communicate()
    return float(output[output.index('=') + 1 : output.rindex("'")])
 
+
 @app.route('/')
 def basic():
-    return 'Hello flask!'
+    return 'Hello World!'
 
 @app.route('/arduino/test', methods=['GET'])
 def arduino_test( action = None ):
@@ -51,7 +57,7 @@ def arduino( action = None ):
         return action
 
     else :
-		return request.query_string
+	return request.query_string
 
     return action
 
@@ -78,13 +84,19 @@ def pi():
     return render_template('hello.html', raspi_info = raspi_dict,
 		  title = 'Raspi Status',
 		  time = timeString)
-
+    
+@app.route('/firebase', methods=['GET'])
+def firebase_database():
+   action = request.args.get("action")
+   firebase.patch('/raspberrypi', {'fire' : action})
+   print(action)
+   return (''), 204
 
 @app.errorhandler(404)
 def page_not_found(error):
     return 'page_not_found_error(404)'
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
     
