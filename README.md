@@ -14,7 +14,7 @@
  <br />
  <br />
 
-### Install Raspbian
+## Install Raspbian
  This project works using Raspiban OS.
  You can download an install file on site below :
  ```
@@ -23,7 +23,7 @@
  <br />
  <br />
 
-### Conneting with SSH, mstsc (Window OS)
+## Conneting with SSH, mstsc (Window OS)
  First of all, we should make remote development environments, using PuTTY or mstsc(Window).
  If you don't need, you can skip this chapter.
  <br />
@@ -63,24 +63,24 @@
  If you want to allow certain port on your Pi, type this.
  ```
  sudo ufw allow 22
- // this code allows tcp/udp communication on #22 port.
+ // this command allows tcp/udp communication on #22 port.
 
  sudo ufw allow 22/tcp
- // this code allows only tcp communication on #22 port.
+ // this command allows only tcp communication on #22 port.
  ```
  <br />
 
  If you want to deny some ports, type this.
  ```
  sudo ufw deny 22/tcp
- // this code deny only tcp communication on #22 port.
+ // this command deny only tcp communication on #22 port.
  ```
  <br />
 
  You can delete rule.
  ```
  sudo ufw delete allow 22/tcp
- // this code will delete 'allow 22/tcp' rule.
+ // this command will delete 'allow 22/tcp' rule.
  ```
  <br />
 
@@ -98,17 +98,17 @@
  You should allow SSH, VNC on raspi-config.
 
 
-### Basic Flask Structure
+## Basic Flask Structure
  ```
  ```
 
 
-### HTTP communication with Arduino (GET type)
+## HTTP communication with Arduino (GET type)
 
 
 
-### Realtime Database data upload
+## Realtime Database data upload
 
 
 
-###
+##
