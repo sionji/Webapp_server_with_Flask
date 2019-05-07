@@ -96,6 +96,7 @@ def firebase_database():
 def page_not_found(error):
     return 'page_not_found_error(404)'
 
+# app run
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
 
