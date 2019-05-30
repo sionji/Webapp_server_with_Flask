@@ -10,7 +10,7 @@ import pymysql
 
 app = Flask(__name__)
 
-def mySQL(sqltype,tablename):
+def mySQL(sqltype,tablename,where):
     # MySQL Connection, Access databse
     db = pymysql.connect(host='localhost', user='pi', password='flytothemoon', db='flytothemoon', charset='utf8')
 
@@ -20,6 +20,7 @@ def mySQL(sqltype,tablename):
     # Write SQL Query
     if (sqltype == 'select') :
 	sql = "select * from "+tablename
+        print(sql)
 	cursor.execute(sql)
 	rows = cursor.fetchall()
         print(rows)
@@ -27,8 +28,14 @@ def mySQL(sqltype,tablename):
         return "OK"
 
     elif (sqltype == 'insert') :
+        sql = "INSERT INTO "+tablename+" (place) VALUES ('"+where+"')"
+        print(sql)
+        cursor.execute(sql)
         db.commit()
-        print("insert")
+        print("insert values")
+        print("last index : "+cursor.lastrowid)
+        db.close()
+        return "OK"
 
     elif (sqltype == 'update') :
         print("update")
@@ -83,14 +90,17 @@ def arduino( action = None ):
         action = request.args.get("action")
 	sqltype = request.args.get("sqltype")
 	tablename = request.args.get("tablename")
+        where = request.args.get("where")
 
         #action = request.args.get['action'].text
         if not action :
             return 'TYPE:get/BAD REQUEST'
 		
-        result = mySQL(sqltype=sqltype,tablename=tablename)
+        result = mySQL(sqltype=sqltype, tablename=tablename, where=where)
         if (sqltype == 'select') :
             #return render_template('mysqlselect.html', mysql_select = result,title = "MariaDB Database",tablename = tablename)
+            return result
+        elif (sqltype == 'insert'):
             return result
 
     else :
@@ -128,12 +138,16 @@ def firebase_database():
 
     message_title = request.args.get("title")
     message_body = request.args.get("body")
+    data_message = {
+            "message_title" : message_title,
+            "message_body" : message_body,
+            }
     result = duckbase.get("/users", None)
     listToken = []
     for k, v in result.items():
         listToken.append(v["token"])
     push_service = FCMNotification(api_key="AAAAKZIq-gg:APA91bFAQi1T8kZRPMiTFol8NG7undfjGOMjw5ebh5QaF3cLbAZQ_XfxSMEo1nF-uThG7sARbtWoZChtoRjWlxhKFLsGcCYY2TT2h8dkX3VnZGFKP9KlfwOBH1ritnBGabzDftMt2Pv9")
-    result = push_service.notify_multiple_devices(registration_ids=listToken, message_title=message_title, message_body=message_body)
+    result = push_service.multiple_devices_data_message(registration_ids=listToken, data_message=data_message)
     print(result)
 
 

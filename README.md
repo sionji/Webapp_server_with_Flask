@@ -7,10 +7,13 @@
  If you want to see a codes on Arduino, please click here :
  ```
  ```
+
  <br />
  If you want to see a codes on Firebase(Notification), please click here : 
+
  ```
  ```
+
  <br />
  <br />
 
@@ -28,7 +31,7 @@
  If you don't need, you can skip this chapter.
  <br />
 
-#### 1) Router Port Forwarding
+### 1) Router Port Forwarding
  You should set port forwarding option when you use router.
  Router assigns inner "virtual" ip address to your RaspberryPi so extern computer or clients cannot find you.
  Clients must access through your router ip address and certain port number,
@@ -39,7 +42,7 @@
  ```
  <br />
 
-#### 2) Raspbian Firewall Configuration
+### 2) Raspbian Firewall Configuration
  I think that your Pi initially installed the firewall when you downloaded raspbian OS full package.
  If not, you can install the firewall using this code. Just type it!
  ```
@@ -88,7 +91,7 @@
  You should open this ports.
  <br />
 
-#### 3) Allow SSH, VNC on raspi-config
+### 3) Allow SSH, VNC on raspi-config
  Type this command on your terminal.
  ```
  sudo raspi-config
@@ -111,4 +114,18 @@
 
 
 
-##
+## HTTP Communication using Python Flask
+
+
+
+
+## Notifying multiple devices using Data request
+
+
+
+## Install MySQL(Maria DB)
+
+
+## Set Password, Make DB and tables
+
+## DB Access using pymysql
