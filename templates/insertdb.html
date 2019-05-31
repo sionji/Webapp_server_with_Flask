@@ -1,0 +1,47 @@
+<style>
+    table {
+        front-family : arial, sans-serif;
+        border-collapse : collapse;
+    }
+    td, th {
+        border : 1px solid #dddddd;
+        text-align : center;
+        padding : 4px;
+    }
+    tr :nth-child(even){
+
+    }
+</style>
+
+<!DOCTYPE html>
+	<head>
+        <meta charset="UTF-8">
+		<title>
+		    Maria DB Database	
+		</title>
+
+	</head>
+
+	<body>
+		<h1> MySQL MariaDB INSERT Query </h1>
+        <h2> Insert data on table 'Deeplearning' - Last Id : {{ lastrowid }}</h2>
+        <table id="deeplearning", class = "table table-striped", border="1"> <tbody>
+                <tr>
+                    <th> INDEX </th>
+                    <th> TIME </th>
+                    <th> PLACE </th>
+                </tr>
+                {% for row in result %}
+                <tr>
+                    {% for d in row %}
+                    <td> {{ d }} </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+
+
+    </body>
+</html>
+
