@@ -12,30 +12,31 @@ app = Flask(__name__)
 
 def mySQL(sqltype,tablename,where):
     # MySQL Connection, Access databse
-    db = pymysql.connect(host='localhost', user='pi', password='flytothemoon', db='flytothemoon', charset='utf8')
+    db = pymysql.connect(host='localhost', user='pi', password='flytothemoon', db='flytothemoon', charset='utf8', use_unicode=True)
 
     # Make Cursor from Connection
     cursor = db.cursor()
 
     # Write SQL Query
     if (sqltype == 'select') :
-	sql = "select * from "+tablename
-        print(sql)
-	cursor.execute(sql)
-	rows = cursor.fetchall()
-        print(rows)
-        db.close()
-        return "OK"
+        try :
+            sql = "select * from "+tablename
+            print(sql)
+	    cursor.execute(sql)
+	    rows = cursor.fetchall()
+            return rows
+        finally :
+            db.close()
 
     elif (sqltype == 'insert') :
-        sql = "INSERT INTO "+tablename+" (place) VALUES ('"+where+"')"
-        print(sql)
-        cursor.execute(sql)
-        db.commit()
-        print("insert values")
-        print("last index : "+cursor.lastrowid)
-        db.close()
-        return "OK"
+        try :
+            sql = "INSERT INTO "+tablename+" (place) VALUES ('"+where+"')"
+            print(sql)
+            cursor.execute(sql)
+            db.commit()
+            return cursor.lastrowid
+        finally :
+            db.close()
 
     elif (sqltype == 'update') :
         print("update")
@@ -77,31 +78,22 @@ def testCall(text):
     return 'test call : ' + text
 
 @app.route('/arduino', methods=['POST', 'GET'])
-def arduino( action = None ):
-    error = None
+def arduino():
     if request.method == 'POST' :
-        action = request.form['action']
-        if not action :
-            return 'TYPE:post/BAD REQUEST'
-
-        return action
+        return '404'
 
     elif request.method == 'GET' :
-        action = request.args.get("action")
 	sqltype = request.args.get("sqltype")
 	tablename = request.args.get("tablename")
         where = request.args.get("where")
-
-        #action = request.args.get['action'].text
-        if not action :
-            return 'TYPE:get/BAD REQUEST'
 		
         result = mySQL(sqltype=sqltype, tablename=tablename, where=where)
+
         if (sqltype == 'select') :
-            #return render_template('mysqlselect.html', mysql_select = result,title = "MariaDB Database",tablename = tablename)
-            return result
+            return render_template('selectdb.html', result=result) 
         elif (sqltype == 'insert'):
-            return result
+            selectedrows = mySQL(sqltype="select", tablename=tablename, where=where)
+            return render_template('insertdb.html', result=selectedrows, lastrowid=result)
 
     else :
         return "Check your request..."
