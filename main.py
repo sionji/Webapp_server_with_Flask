@@ -10,6 +10,9 @@ import pymysql
 
 app = Flask(__name__)
 
+# fire status global variable
+fire_pistatus = 0
+
 def mySQL(sqltype,tablename,where):
     # MySQL Connection, Access databse
     db = pymysql.connect(host='localhost', user='pi', password='flytothemoon', db='flytothemoon', charset='utf8', use_unicode=True)
@@ -44,6 +47,19 @@ def mySQL(sqltype,tablename,where):
     elif (sqltype == 'delete') :
         print("delete")
 
+def fcm_datapush(title, body) : 
+    data_message = {
+            "message_title" : title,
+            "message_body" : body,
+            "message_channel" : "EMERGENCY"
+            }
+    listToken = []
+    usertokens = duckbase.get("/users", None)
+    for k, v in usertokens.items():
+        listToken.append(v["token"])
+    push_service = FCMNotification(api_key="AAAAKZIq-gg:APA91bFAQi1T8kZRPMiTFol8NG7undfjGOMjw5ebh5QaF3cLbAZQ_XfxSMEo1nF-uThG7sARbtWoZChtoRjWlxhKFLsGcCYY2TT2h8dkX3VnZGFKP9KlfwOBH1ritnBGabzDftMt2Pv9")
+    result = push_service.multiple_devices_data_message(registration_ids=listToken, data_message=data_message)
+    return result
 
 #firebase realtime database
 thread = None
@@ -61,26 +77,35 @@ def get_cpu_temperature():
 def basic():
     return 'Fly to the Moon Graduate Project'
 
-@app.route('/arduino/test', methods=['GET'])
-def arduino_test( action = None ):
-    action = request.args.get("action")
-    if ( action == 'fire' ) :
-        return 'Fire occured !! '
-    elif ( action == 'open' ) :
-        return 'Open the door'
-    elif ( action == 'close' ) :
-        return 'Close the door'
+@app.route('/fire/<int:input_pistatus>')
+def fire_occurs(input_pistatus):
+    global fire_pistatus
+    # fire_pistatus and input_pistatus is int type data
+    if (fire_pistatus == 0 and input_pistatus == 1) :
+        fire_pistatus = input_pistatus
+        message = fcm_datapush('Fire Occured!', 'Touch to see evacuation route.')
+        print(message)
+        return 'Global variable is %d' % fire_pistatus
+    
     else :
-        return 'You know nothing...'
- 
+        return 'Global variable is %d' % fire_pistatus
+
+@app.route('/fire/reset', methods=['GET'])
+def fire_reset():
+    global fire_pistatus
+    fire_pistatus = 0
+    return 'Global variable reset to %d' %fire_pistatus
+
 @app.route('/test/<string:text>/')
 def testCall(text):
     return 'test call : ' + text
 
-@app.route('/arduino', methods=['POST', 'GET'])
+@app.route('/arduino', methods=['GET'])
 def arduino():
-    if request.method == 'POST' :
-        return '404'
+    global fire_pistatus
+    if (fire_pistatus == 1) :
+        # if fire_pistatus is int 1, then return string 1
+        return '1'
 
     elif request.method == 'GET' :
 	sqltype = request.args.get("sqltype")
@@ -127,27 +152,17 @@ def pi():
 @app.route('/firebase', methods=['GET'])
 def firebase_database():
     action = request.args.get("action")
-
+    duckbase.patch('/raspberrypi', {'fire' : action})
+    
     message_title = request.args.get("title")
     message_body = request.args.get("body")
-    data_message = {
-            "message_title" : message_title,
-            "message_body" : message_body,
-            }
-    result = duckbase.get("/users", None)
-    listToken = []
-    for k, v in result.items():
-        listToken.append(v["token"])
-    push_service = FCMNotification(api_key="AAAAKZIq-gg:APA91bFAQi1T8kZRPMiTFol8NG7undfjGOMjw5ebh5QaF3cLbAZQ_XfxSMEo1nF-uThG7sARbtWoZChtoRjWlxhKFLsGcCYY2TT2h8dkX3VnZGFKP9KlfwOBH1ritnBGabzDftMt2Pv9")
-    result = push_service.multiple_devices_data_message(registration_ids=listToken, data_message=data_message)
+    result = fcm_datapush(message_title, message_body) 
     print(result)
 
 
-    duckbase.patch('/raspberrypi', {'fire' : action})
-    # patch can change a single data
+    # firebase patch query can change a single data
     # data = { 'deeplearning' : action }
     # sionbase.put('','put', data)
-
     # fb.put takes three arguments : first is url or path,
     # second is the keyname or the snapshot name and
     # third is the data(json)
