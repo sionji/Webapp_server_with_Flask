@@ -105,6 +105,25 @@ def arduino():
     global fire_pistatus
     if (fire_pistatus == 1) :
         # if fire_pistatus is int 1, then return string 1
+        return 'y'
+
+    elif request.method == 'GET' :
+	sqltype = request.args.get("sqltype")
+	tablename = request.args.get("tablename")
+        where = request.args.get("where")
+	
+        if ( sqltype == 'insert' ) :
+            mySQL(sqltype=sqltype, tablename=tablename, where=where)
+        return 'n'
+
+    else :
+        return "Check your request..."
+
+@app.route('/arduino/web', methods=['GET'])
+def arduino_web():
+    global fire_pistatus
+    if (fire_pistatus == 1) :
+        # if fire_pistatus is int 1, then return string 1
         return '1'
 
     elif request.method == 'GET' :
