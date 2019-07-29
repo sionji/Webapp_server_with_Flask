@@ -25,8 +25,8 @@ def mySQL(sqltype,tablename,where):
         try :
             sql = "select * from "+tablename
             print(sql)
-	    cursor.execute(sql)
-	    rows = cursor.fetchall()
+            cursor.execute(sql)
+            rows = cursor.fetchall()
             return rows
         finally :
             db.close()
@@ -108,8 +108,8 @@ def arduino():
         return 'y'
 
     elif request.method == 'GET' :
-	sqltype = request.args.get("sqltype")
-	tablename = request.args.get("tablename")
+        sqltype = request.args.get("sqltype")
+        tablename = request.args.get("tablename")
         where = request.args.get("where")
 	
         if ( sqltype == 'insert' ) :
@@ -127,8 +127,8 @@ def arduino_web():
         return '1'
 
     elif request.method == 'GET' :
-	sqltype = request.args.get("sqltype")
-	tablename = request.args.get("tablename")
+        sqltype = request.args.get("sqltype")
+        tablename = request.args.get("tablename")
         where = request.args.get("where")
 		
         result = mySQL(sqltype=sqltype, tablename=tablename, where=where)
